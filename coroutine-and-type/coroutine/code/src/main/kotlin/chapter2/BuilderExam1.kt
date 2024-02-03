@@ -1,4 +1,4 @@
-package com.study.twoweeks
+package chapter2
 
 import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope

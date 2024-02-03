@@ -1,4 +1,4 @@
-package com.study.twoweeks
+package chapter2
 
 import kotlin.coroutines.CoroutineContext
 import kotlinx.coroutines.CoroutineName

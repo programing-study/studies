@@ -23,6 +23,7 @@ dependencies {
     implementation(libs.spring.boot.web)
     implementation(libs.kotlin.logging.jvm)
     implementation(libs.kotlin.reflect)
+    testImplementation(libs.kotest.runner.junit5)
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
