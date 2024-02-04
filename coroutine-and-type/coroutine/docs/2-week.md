@@ -37,7 +37,7 @@ fun main() {
 ```
 
 launch 함수는 CoroutineScope 인터페이스의 확장함수이다.
-CoroutineScope interface는 부모 쿠루틴과 자식 코루틴 사이의 관계를 정ㄹㅂ하기 위한 목적으로 `구조화된 동시성(structured concurrency)`의 핵심이다.
+CoroutineScope interface는 부모 쿠루틴과 자식 코루틴 사이의 관계를 정립하기 위한 목적으로 `구조화된 동시성(structured concurrency)`의 핵심이다.
 
 launch는 데몬스레드와 어느정도 비슷하지만 훨씬 가볍다.
 `demon thread는 백그라운드에서 동작하며, 우선순위가 낮은 스레드이다. launch와 비교한 이유는 둘다 프로그램이 끝나는 걸 막을 수 없어서이다.`
@@ -65,7 +65,7 @@ runBlocking이 사용되는 특수한 경우는 실제로 두 가지
 * `Deferred작업`이 끝나면 값을 반환하는 중단 메서드인 `await`가 있음
 
 `async빌더`와 `launch 빌더`와의 차이점은 `async 빌더`는 값을 반환함
-`async`는 값을 생성할 때, `launch`는 값이 필요하지 않을때 사용함
+`async`는 값을 반환할 때, `launch`는 값이 필요하지 않을때 사용함
 
 ## 구조화된 동시성
 
@@ -98,7 +98,7 @@ runBlocking 내부에 launch 를 호출하면 launch는 runBlocking의 자식이
 
 * 자식은 부모로부터 컨텍스트를 상속받는다.
 * 부모는 모든 자식이 작업을 마칠 때까지 기다린다.
-* 부모 코루틴이 취소되면 자식 코루틴되 취소된다.
+* 부모 코루틴이 취소되면 자식 코루틴 취소된다.
 * 자식 코루틴에서 에러가 발생하면, 부모 코루틴 또한 에러로 소멸한다.
 
 `runBlocking` 은 자식이 될 수 없으며 루트 코루틴으로만 사용된다.
@@ -135,6 +135,9 @@ CoroutineContext를 감싸는 래퍼(wrapper)처럼 보인다.
 ## CoroutineContext 인터페이스
 
 CoroutineContext는 원소나 원소들의 집합을 나타내는 인터페이스이다.
+> 코루틴에 대한 지속적인 컨텍스트. 이는 [Element] 인스턴스의 색인화된 세트입니다.  
+> 인덱스 세트는 세트와 맵이 혼합된 것입니다.  
+> 이 세트의 모든 요소에는 고유한 [키]가 있습니다.
 
 ## CoroutineContext에서 원소 찾기
 
@@ -156,11 +159,9 @@ CoroutineName은 타입이나 클래스가 아닌 companion 객체이다.
 ## 컨텍스트 더하기
 
 - CoroutineContext의 유용한 기능은 두 개의 CoroutineContext를 합쳐 하나의 CoroutineContext를 만드는 것.
-- 다른 키를 가진 두 우ㅝㄴ소를 더하면 만들어진 컨텍스트는 두 가지 키를 모두 가진다.
+- 다른 키를 가진 두 원소를 더하면 만들어진 컨텍스트는 두 가지 키를 모두 가진다.
 
 ```kotlin
-
-
 fun main() {
     val ctx1: CoroutineContext = CoroutineName("Name1")
     println(ctx1[CoroutineName]?.name)      // Name1
@@ -180,7 +181,6 @@ fun main() {
 CoroutineContext에 같은 키를 가진 또 다른 원소가 더해지면 맵처럼 새로운 원소가 기존 원소를 대체한다.
 
 ```kotlin
-
 fun main() {
     val ctx1: CoroutineContext = CoroutineName("Name1")
     println(ctx1[CoroutineName]?.name)      // Name1
@@ -339,7 +339,7 @@ suspend fun main(): Unit = withContext(CounterContext("Outer")) {
 ```
 
 CoroutineContext는 맵이나 집합과 같은 컬렉션이랑 개념적으로 비슷하다.  
-CoroutineContext는 Element 인터페이스의 인덱싱된 집합이며, Element 또한 CoroutineContext 이다.
+CoroutineContext는 Element 인터페이스의 인덱싱된 집합이며, Element 또한 CoroutineContext 이다.  
 CoroutineContext 안의 모든 원소는 식별할 때 사용되는 유일한 Key를 가지고 있다.
 
 ## 잡(Job)과 자식 코루틴 기다리기
@@ -535,6 +535,33 @@ Cancel done
 invokeOnCompletion 메서드는 잡이 'Completed'나 'Cancelled'와 같은 마지막 상태에 도달했을 때 호출될 핸들러를 지정하는 역할을 한다.    
 invokeOnCompletion 은 취소하는 중에 동기적으로 호출되며, 어떤 스레드에서 실행할지 결정할 수 없다.
 
+```kotlin
+import kotlinx.coroutines.*
+
+fun main() = runBlocking {
+    // 코루틴을 시작합니다.
+    val job = launch {
+        println("코루틴 내부: 일을 시작합니다.")
+        delay(1000L) // 임의의 작업을 모방하기 위해 1초 동안 대기합니다.
+        println("코루틴 내부: 일을 마칩니다.")
+    }
+
+    // 코루틴이 완료될 때 호출될 콜백을 등록합니다.
+    job.invokeOnCompletion { cause ->
+        if (cause != null) {
+            println("코루틴이 취소되었습니다: $cause")
+        } else {
+            println("코루틴이 성공적으로 완료되었습니다.")
+        }
+    }
+
+    // 코루틴의 완료를 기다립니다.
+    job.join()
+    println("메인: 프로그램을 종료합니다.")
+}
+
+```
+
 ## 중단될 수 없는 걸 중단하기
 
 취소는 중단점에서 일어나기 때문에 중단점이 없으면 취소를 할 수 없다.  
@@ -549,7 +576,7 @@ invokeOnCompletion 은 취소하는 중에 동기적으로 호출되며, 어떤 
 ```
 
 yield 함수는 전형적인 최상위 중단 함수이다. ㅅ코프가 필요하지 않기 때문에 일반적인 중단 함수에서도 사용될 수 있다.  
-중단하고 재개하는 일ㅇㄹ 하기 때문에 스레드 풀을 가진 디스패처를 사용하면 스레드가 바뀌는 문제가 생길 수 있다.  
+중단하고 재개하는 일을 하기 때문에 스레드 풀을 가진 디스패처를 사용하면 스레드가 바뀌는 문제가 생길 수 있다.  
 yield는 CPU 사용량이 크거나 스레드를 블로킹하는 중단 함수에서 자주 사용됩니다.
 
 ## suspendCancellableCoroutine
@@ -557,12 +584,43 @@ yield는 CPU 사용량이 크거나 스레드를 블로킹하는 중단 함수�
 `suspendCancellableCoroutine` 는 라이브러리의 실행을 취소하거나 자원을 해제할 때 사용된다.
 
 ```kotlin
-suspend fun someTask() = suspendCalcellableCoroutine { count ->
-    cont.invokeOnCancellation {
-        // 정리 작업을 수행한다.
-    }
-    // 나머지 구현 부분
+import kotlinx.coroutines.*
+import kotlin.coroutines.resume
+import kotlin.coroutines.suspendCoroutine
+
+// 비동기 함수 모방
+fun asyncLoadData(callback: (String) -> Unit) {
+    // 비동기적으로 데이터를 로드한다고 가정
+    Thread {
+        Thread.sleep(1000) // 데이터 로드를 위해 1초 대기
+        callback("데이터 로드 완료")
+    }.start()
 }
+
+// suspendCancellableCoroutine을 사용한 취소 가능한 비동기 함수
+suspend fun loadDataCancellable(): String = suspendCancellableCoroutine { continuation ->
+    asyncLoadData { data ->
+        // 비동기 작업의 결과를 코루틴에 전달
+        if (continuation.isActive) continuation.resume(data)
+    }
+
+    // 코루틴이 취소될 때 호출되는 로직
+    continuation.invokeOnCancellation {
+        println("코루틴이 취소되었습니다.")
+    }
+}
+
+fun main() = runBlocking {
+    val job = launch {
+        val data = loadDataCancellable()
+        println(data)
+    }
+
+    delay(500) // 비동기 작업이 완료되기 전에 코루틴을 취소
+    job.cancelAndJoin()
+    println("메인 종료")
+}
+
 ```
 
 # 예외 처리
@@ -617,7 +675,7 @@ Exception in thread "main" java.lang.Error: Some error
  */
 ```
 
-부모가 취소되면 자식도 취소되기 때문에 쌍방으로 저파된다.
+부모가 취소되면 자식도 취소되기 때문에 쌍방으로 전파된다.
 
 ## 코루틴 종료 멈추기
 
@@ -696,6 +754,32 @@ suspend fun notifyAnalytics(actions: List<UserAction>) =
 CancellationException의 서브클래스면 부모로 전파되지 않는다.  
 현재 코루틴을 취소시킨다.
 
+```kotlin
+import kotlinx.coroutines.*
+
+fun main() = runBlocking {
+    val job = launch {
+        try {
+            // 장시간 실행되는 작업을 시뮬레이션합니다.
+            for (i in 1..5) {
+                println("작업 실행 중 $i")
+                delay(1000L)
+            }
+        } catch (e: CancellationException) {
+            println("코루틴이 취소되었습니다: ${e.message}")
+        } finally {
+            println("코루틴의 finally 블록 실행")
+        }
+    }
+
+    delay(2500L) // 잠시 대기한 후 코루틴을 취소합니다.
+    println("코루틴 취소 요청")
+    job.cancelAndJoin() // 코루틴을 취소하고 완전히 종료될 때까지 대기합니다.
+    println("메인 프로그램 종료")
+}
+
+```
+
 ## 코루틴 예외 핸들러
 
 ```kotlin
@@ -740,7 +824,8 @@ suspend fun <R> coroutineScope(
 ```
 
 async나 launch와 다르게 coroutineScope의 본체는 리시버 없이 곧바로 호출된다.  
-coroutineScope 함수는 새로운 코루틴을 생성하지만 새로운 코루틴이 끝날 때까지 coroutineScope를 호출한 코루틴을 중단하기 때문에 호출한 코루틴이 작업을 동시에 시작하지 않는다.
+coroutineScope 함수는 새로운 코루틴을 생성하지만 새로운 코루틴이 끝날 때까지 coroutineScope를   
+호출한 코루틴을 중단하기 때문에 호출한 코루틴이 작업을 동시에 시작하지 않는다.
 
 ```kotlin
 import kotlin.coroutines.coroutineContext
@@ -759,9 +844,13 @@ fun main() = runBlocking {
     println(a)
     println(b)
 }
+
+//a is calculated
+//10
+//20
 ```
 
-생성된 스코프는 바깥의 스코프에서 coroutineContext를 상송 받지만 컨텍스트의 job을 오버라이딩한다.  
+생성된 스코프는 바깥의 스코프에서 coroutineContext를 상속 받지만 컨텍스트의 job을 오버라이딩한다.  
 따라서 생성된 스코프는 부모가 해야 할 책임을 이어 받는다.
 
 * 부모로부터 컨텍스트를 상속받음
@@ -791,7 +880,10 @@ fun main() = runBlockig(CoroutineName("Parent")) {
     println("After")
 }
 
-// 1.5초 뒤 cancel되서 longTask>첫번째launch만 실행
+//Before
+//[Parent] Finished task 1
+//[Parent] Finished task 2
+//After
 ```
 
 coroutineScope 함수는 기존의 중단 컨텍스트에서 벗어난 새로운 스코프를 만든다.  
@@ -806,7 +898,7 @@ coroutineScope 함수는 기존의 중단 컨텍스트에서 벗어난 새로운
 ## withContext
 
 withContext 함수는 coroutineScope와 비슷하지만 스코프의 컨텍스트를 변경할 수 있다는 특징이 있다.  
-withContext의 인자로 컨텍스트를 제공하면(코루틴 빌더와 같은 방식으로) 부모 스콮의 컨텍스트를 대채한다.
+withContext의 인자로 컨텍스트를 제공하면(코루틴 빌더와 같은 방식으로) 부모 스코프의 컨텍스트를 대채한다.
 
 ```kotlin
 fun CoroutineScope.log(text: String) {
@@ -824,7 +916,7 @@ supervisorScope 함수는 호출한 스코프로부터 상속받은 CoroutineSco
 
 (Overriding 하는 것)
 
-코루틴 컨텍스트를 overriding 하기 떄문에 자식에서 exception이 발생되어도, 취소가 되지 않음.  
+코루틴 컨텍스트를 overriding 하기 때문에 자식에서 exception이 발생되어도, 취소가 되지 않음.  
 취소는 부모 컨텍스트를 물려받은 자식 컨텍스트에서 취소가 발생되면, 자식과 부모 둘다 취소시켜야 하는 것  
 [구조화된 동시성 참고](#구조화된-동시성)
 
@@ -863,7 +955,7 @@ suspend fun calculateAnswerOrNull(): User? =
 ```kotlin
 suspend fun main() = coroutineScope {
     repeat(1000) {
-        launch {
+        launch { // <-- Dispatchers.Default 는 생략되어 있다.
             List(1000) { Random.nextLong() }.maxOrNull()
             val threadName = Thread.currentThread().name
             println("Running on thread : $threadName")
@@ -891,6 +983,8 @@ private val dispatcher = Dispatchers.Default.limitedParallelism(5)
 CPU에 집약적인 작업을 수행한다면 Dispatchers.Default로 실행해야 한다.
 대부분의 애플리케이션에는 두개의 디스패처만 있어도 충분하다.
 
+// 안드로이드 대상인듯
+
 ## IO 디스패처
 
 Dispatchers.IO는 파일을 읽고 쓰는 경우, 안드로이드의 셰어드 프레퍼런스(shared preference)를 사용하는 경우, 블로킹 함수를 호출하는 경우처럼 I/O 연산으로 스레드를 블로킹 할 때 사용하기
@@ -915,10 +1009,10 @@ suspend fun main() {
 
 50개가 넘는 스레드를 사용할 수 있도록 만들어져 있기 때문에 1초 밖에 걸리지 않는다.
 
-Dispatchers.ID를 사용하는 가장 흔한 경우는 라이브러리에서 블로킹 함수를 호출해야 하는 경우이다. 이런 경우 withContext(Dispatchers.IO)로 패킹해 중단 함수로 만드는 것이 가장
+Dispatchers.IO를 사용하는 가장 흔한 경우는 라이브러리에서 블로킹 함수를 호출해야 하는 경우이다. 이런 경우 withContext(Dispatchers.IO)로 패킹해 중단 함수로 만드는 것이 가장
 좋다.  
 withContext(Dispatchers.IO)로 래핑한 함수가 너무 많은 스레드를 블로킹하면 문제가 될 수 있다.  
-Dispatchers.ID로 생성된 스레드 수 보다 많은 수의 스레드를 사용하면 자기 차례가 돌아올 떄 까지 스레드 전부를 기다리게 할 수 있다.  
+Dispatchers.IOl로 생성된 스레드 수 보다 많은 수의 스레드를 사용하면 자기 차례가 돌아올 떄 까지 스레드 전부를 기다리게 할 수 있다.  
 이런 경우 limitedParallelism을 사용할 수 있다.
 
 ## 커스텀 스레드 풀을 사용하는 IO 디스패처
@@ -1043,7 +1137,7 @@ suspend fun main() = measureTimeMillis {
 
 ```
 
-코틀린 코루틴 팀이 프로젝트 룸이 안정화되면 가상 스레드를 기본으로 사용할 수 있다고 했기 때문에 나웆ㅇ에는 룸 디스패처가 필요하지 않을 수 있다.
+코틀린 코루틴 팀이 프로젝트 룸이 안정화되면 가상 스레드를 기본으로 사용할 수 있다고 했기 때문에 나중에는 룸 디스패처가 필요하지 않을 수 있다.
 
 ## 제한 받지 않는 디스패처
 
@@ -1203,7 +1297,7 @@ class CoroutineScopeConfiguration {
 추가적인 연산을 시작하기 위한 스코프를 종종만들곤 하는데, 이런 스코프는 함수나 생성자의 인자를 통해 주로 주입된다.  
 스코프를 호출을 중단하기 위한 목적으로만 사용하려는 경우 SupervisorSocpe를 사용하는 것만으로 충분하다.
 
-스코프에서 블로킹을 호출하면 Dispatchers.IO를 사용하고, 안드리오드의 메인 뷰를 다뤄야 한다면 Dispatchers.Main을 사용한다.
+스코프에서 블로킹을 호출하면 Dispatchers.IO를 사용하고, 안드로이드 메인 뷰를 다뤄야 한다면 Dispatchers.Main을 사용한다.
 
 # 공유상태로 인한 문제
 
@@ -1339,3 +1433,73 @@ suspend fun main() = coroutineScope {
 ```
 
 세마포어는 공유 상태로 인해 생기는 문제를 해결 할 수는 없지만, 동시 요청을 처리하는 수를 제한할 때 사용할 수 있어 `처리율 제한 장치(rate limiter)`를 구현할 때 도움이 됩니다.
+
+# Q&A
+
+## Q1. 코루틴 element는 자료구조이고, job은 구현체같은 건가?
+
+### CoroutineContext.Element
+
+CoroutineContext.Element는 코루틴 컨텍스트(CoroutineContext)를 구성하는 기본 단위입니다.
+코루틴 컨텍스트는 여러 Element로 구성된 집합체로, 코루틴의 실행 환경을 정의합니다. 여기에는 실행될 스레드, 코루틴의 이름, 예외 처리 방법 등이 포함될 수 있습니다.
+Element는 자료구조적인 측면에서 코루틴 컨텍스트의 구성 요소로 볼 수 있으며, 각각은 CoroutineContext 인터페이스를 구현합니다.
+Element는 Key를 통해 식별되며, 코루틴 컨텍스트 내에서 유일한 값을 가집니다. 이를 통해 특정 Element를 검색하거나 교체할 수 있습니다.
+
+### Job
+
+Job은 코루틴의 생명주기를 관리하는 Element의 한 예입니다. 즉, Job도 CoroutineContext.Element 인터페이스를 구현합니다.
+Job은 코루틴이 수행하는 작업의 상태를 나타내며, 코루틴을 시작, 취소, 완료의 과정을 관리합니다.
+Job은 코루틴의 계층적 관계를 구성하는 데 사용되며, 부모 Job이 취소되면 자식 Job도 함께 취소됩니다.
+따라서, Job은 Element의 구현체 중 하나로, 코루틴의 생명주기와 관련된 기능을 제공하는 특수한 역할을 수행합니다.
+
+### 결론
+
+Element는 코루틴 컨텍스트의 구성 요소를 나타내는 자료구조적인 개념이며, Job은 그러한 Element 중 하나로, 코루틴의 생명주기를 관리하는 구현체입니다.
+모든 Job은 Element이지만, 모든 Element가 Job은 아닙니다. Job 외에도 CoroutineDispatcher, CoroutineName, CoroutineExceptionHandler 등 다양한
+종류의 Element가 존재합니다.
+이렇게 Element와 Job은 코루틴의 실행 환경과 생명주기를 관리하는 데 있어 중요한 역할을 하며, 코루틴을 더 유연하고 효과적으로 사용할 수 있도록 도와줍니다.
+
+## Q2. List up full implementations of kotlin CoroutineContext interface in Korean.
+
+CoroutineContext 인터페이스의 전체 구현체를 나열하는 것은 Kotlin 코루틴 라이브러리의 버전 및 추가 라이브러리에 따라 달라질 수 있습니다. 하지만 Kotlin 코루틴의 기본 제공 구현체들을
+기준으로, 주요 CoroutineContext 구현체들을 다음과 같이 나열할 수 있습니다:
+
+주요 CoroutineContext 구현체
+Job: 코루틴의 생명주기를 관리합니다. 코루틴을 시작, 취소, 그리고 그 상태를 조회하는 기능을 제공합니다.
+
+CoroutineDispatcher: 코루틴이 실행될 스레드를 결정합니다. Dispatchers.Main, Dispatchers.IO, Dispatchers.Default, Dispatchers.Unconfined
+등이 있습니다.
+
+CoroutineName: 디버깅을 위한 코루틴의 이름을 제공합니다. 이름은 로깅이나 디버깅 시 유용하게 사용될 수 있습니다.
+
+CoroutineExceptionHandler: 코루틴 내에서 발생한 예외를 처리하는 핸들러입니다. 이를 통해 코루틴에서 발생한 예외를 적절하게 처리할 수 있습니다.
+
+ContinuationInterceptor: 코루틴의 continuation(실행을 재개하는 지점)을 가로채고, 필요에 따라 수정하거나 추가적인 작업을 수행할 수 있습니다. CoroutineDispatcher도
+ContinuationInterceptor를 상속받습니다.
+
+예시 코드
+CoroutineContext의 구성 요소를 사용하는 간단한 예시는 다음과 같습니다:
+
+```kotlin
+import kotlinx.coroutines.*
+
+fun main() = runBlocking {
+    val context =
+        Job() + Dispatchers.Default + CoroutineName("testCoroutine") + CoroutineExceptionHandler { _, exception ->
+            println("An error occurred: $exception")
+        }
+    val job = launch(context) {
+        println("Running in ${coroutineContext[CoroutineName]}")
+    }
+    job.join()
+}
+```
+
+위 예시에서는 CoroutineContext를 구성하기 위해 Job, Dispatchers.Default, CoroutineName, 그리고 CoroutineExceptionHandler를 결합합니다. 그 후, 이
+컨텍스트를 사용하여 코루틴을 시작합니다.
+
+CoroutineContext의 구현체들은 코루틴의 실행 방식을 세밀하게 제어할 수 있게 해주며, Kotlin 코루틴 프로그래밍에서 매우 중요한 역할을 합니다.
+
+## Virtual Thread 옵션과 Dispatchers.IO 와의 연관관계가 있는가?
+
+> > 예제 만들면 추가
