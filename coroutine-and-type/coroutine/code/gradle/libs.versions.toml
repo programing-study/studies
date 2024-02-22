@@ -1,0 +1,111 @@
+[versions]
+kotlin = "1.9.22"
+jib = "3.1.4"
+springBoot = "3.2.2"
+springDependencyManagement = "1.0.11.RELEASE"
+springCloud = "4.0.3"
+springMock = "3.1.1"
+swaggerUI = "2.2.0"
+springOpenApi = "1.7.0"
+springCloudKubernetes = "3.0.4"
+springCloudOpenFeign = "4.0.4"
+springCloudDependencies = "2022.0.4"
+springBootAdmin = "3.1.6"
+jackson = "2.15.2"
+envers = "6.2.7.Final"
+springFramework = "6.0.11"
+mockk-jvm = "1.13.8"
+protobuf = "3.24.4"
+grpc = "1.58.0"
+grpcKotlin = "1.4.0"
+coroutines = "1.8.0-RC2"
+kotlinLogging = "2.0.11"
+h2dbVersion = "2.2.224"
+
+# kotest
+kotest = "5.5.4"
+kotestExtensionsSpring = "1.1.2"
+mockk = "1.12.4"
+kotlinLogger = "3.0.2"
+
+#netty
+nettyForMacos = "4.1.79.Final:osx-aarch_64"
+
+gradleGitProperties = "2.4.1"
+ktlint = "11.5.0"
+mysql = "8.0.32"
+jasypt = "3.0.5"
+
+protobufPlugin = "0.9.4"
+armeria = "1.25.2"
+hibernateValidator = "8.0.1.Final"
+
+[libraries]
+spring-boot-actuator = { module = "org.springframework.boot:spring-boot-starter-actuator", version.ref = "springBoot" }
+spring-boot-validation = { module = "org.springframework.boot:spring-boot-starter-validation", version.ref = "springBoot" }
+spring-boot-web = { module = "org.springframework.boot:spring-boot-starter-web", version.ref = "springBoot" }
+spring-boot-webflux = { module = "org.springframework.boot:spring-boot-starter-webflux", version.ref = "springBoot" }
+spring-boot-data-jpa = { module = "org.springframework.boot:spring-boot-starter-data-jpa", version.ref = "springBoot" }
+spring-boot-test = { module = "org.springframework.boot:spring-boot-starter-test", version.ref = "springBoot" }
+spring-boot-admin-server = { module = "de.codecentric:spring-boot-admin-starter-server", version.ref = "springBootAdmin" }
+spring-boot-admin-client = { module = "de.codecentric:spring-boot-admin-starter-client", version.ref = "springBootAdmin" }
+spring-boot-annotation-configrator-processor = { module = "org.springframework.boot:spring-boot-configuration-processor", version.ref = "springBoot" }
+
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlin" }
+kotlin-logging-jvm = { module = "io.github.microutils:kotlin-logging-jvm", version.ref = "kotlinLogging" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-coroutines-reactor = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-reactor", version.ref = "coroutines" }
+
+spring-cloud-starter-kubernetest-fabric8-all = { module = "org.springframework.cloud:spring-cloud-starter-kubernetes-fabric8-all", version.ref = "springCloudKubernetes" }
+spring-cloud-open-feign = { module = "org.springframework.cloud:spring-cloud-starter-openfeign", version.ref = "springCloudOpenFeign" }
+spring-cloud-dependencies = { module = "org.springframework.cloud:spring-cloud-dependencies", version.ref = "springCloudDependencies" }
+spring-context = { module = "org.springframework:spring-context", version.ref = "springFramework" }
+spring-context-tx = { module = "org.springframework:spring-tx", version.ref = "springFramework" }
+springdoc-openapi-start-webmvc-ui = { module = "org.springdoc:springdoc-openapi-starter-webmvc-ui", version.ref = "swaggerUI" }
+
+h2-database = { module = "com.h2database:h2", version.ref = "h2dbVersion" }
+
+hibernate-envers = { module = "org.hibernate:hibernate-envers", version.ref = "envers" }
+hiberate-validators = { module = "org.hibernate.validator:hibernate-validator", version.ref = "hibernateValidator" }
+#querydsl-apt-jakarta = { module = "com.querydsl:querydsl-apt", version.ref = "queryDsl"  }
+#querydsl-jpa-jakarta = { module = "com.querydsl:querydsl-jpa", version.ref = "queryDsl"}
+
+jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
+mysql-connector-java = { module = "mysql:mysql-connector-java", version.ref = "mysql" }
+
+jasypt-spring-boot-starter = { module = "com.github.ulisesbocchio:jasypt-spring-boot-starter", version.ref = "jasypt" }
+
+kotest-runner-junit5 = { module = "io.kotest:kotest-runner-junit5", version.ref = "kotest" }
+kotest-extensions-spring = { module = "io.kotest.extensions:kotest-extensions-spring", version.ref = "kotestExtensionsSpring" }
+kotlin-stdlib-jdk8 = { module = "org.jetbrains.kotlin:kotlin-stdlib-jdk8", version.ref = "kotlin" }
+mockk = { module = "io.mockk:mockk", version.ref = "mockk" }
+mockk-jvm = { module = "io.mockk:mockk-jvm", version.ref = "mockk-jvm" }
+
+protobuf-util = { module = "com.google.protobuf:protobuf-java-util", version.ref = "protobuf" }
+protobuf-kotlin = { module = "com.google.protobuf:protobuf-kotlin", version.ref = "protobuf" }
+grpc-stub = { module = "io.grpc:grpc-stub", version.ref = "grpc" }
+grpc-protobuf = { module = "io.grpc:grpc-protobuf", version.ref = "grpc" }
+grpc-netty-shaded = { module = "io.grpc:grpc-netty-shaded", version.ref = "grpc" }
+grpc-kotlin-stub = { module = "io.grpc:grpc-kotlin-stub", version.ref = "grpcKotlin" }
+
+armeria-bom = { module = "com.linecorp.armeria:armeria-bom", version.ref = "armeria" }
+armeria-spring-boot3-starter = { module = "com.linecorp.armeria:armeria-spring-boot3-starter", version.ref = "armeria" }
+armeria-spring-boot3-webflux-starter = { module = "com.linecorp.armeria:armeria-spring-boot3-webflux-starter", version.ref = "armeria" }
+armeria-spring-tomcat10 = { module = "com.linecorp.armeria:armeria-tomcat10", version.ref = "armeria" }
+armeria-grpc = { module = "com.linecorp.armeria:armeria-grpc", version.ref = "armeria" }
+
+[plugins]
+kotlin = { id = "kotlin", version.ref = "kotlin" }
+kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlin-spring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
+kotlin-kapt = { id = "org.jetbrains.kotlin.kapt", version.ref = "kotlin" }
+kotlin-jpa = { id = "org.jetbrains.kotlin.plugin.jpa", version.ref = "kotlin" }
+kotlin-noarg = { id = "org.jetbrains.kotlin.plugin.noarg", version.ref = "kotlin" }
+kotlin-allopen = { id = "org.jetbrains.kotlin.plugin.allopen", version.ref = "kotlin" }
+
+jib = { id = "com.google.cloud.tools.jib", version.ref = "jib" }
+gradle-git-properties = { id = "com.gorylenko.gradle-git-properties", version.ref = "gradleGitProperties" }
+ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+springboot = { id = "org.springframework.boot", version.ref = "springBoot" }
+spring-dependencyManagement = { id = "io.spring.dependency-management", version.ref = "springDependencyManagement" }
+protobuf = { id = "com.google.protobuf", version.ref = "protobufPlugin" }
